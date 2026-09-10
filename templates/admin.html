@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Admin - Bmanga{% endblock %}
+{% block content %}
+<section class="section admin">
+  <div class="sectionhead"><h1>Bảng quản trị</h1><a class="btn" href="{{url_for('admin_manga_new')}}">+ Thêm truyện</a></div>
+  <div class="stats">
+    <div><b>{{stats.manga}}</b><span>Truyện</span></div>
+    <div><b>{{stats.chapters}}</b><span>Chương</span></div>
+    <div><b>{{stats.users}}</b><span>Người dùng</span></div>
+    <div><b>{{stats.comments}}</b><span>Bình luận</span></div>
+  </div>
+
+  <h2>Quản lý truyện</h2>
+  <div class="tablewrap"><table><tr><th>ID</th><th>Tên</th><th>Trạng thái</th><th>Lượt xem</th><th>Thao tác</th></tr>
+  {% for m in mangas %}<tr><td>{{m.id}}</td><td>{{m.title}}</td><td>{{m.status}}</td><td>{{m.views}}</td><td class="actions">
+    <a href="{{url_for('admin_manga_edit',mid=m.id)}}">Sửa</a>
+    <a href="{{url_for('admin_chapter_new',mid=m.id)}}">+ Chương</a>
+    <form method="post" action="{{url_for('admin_manga_delete',mid=m.id)}}" onsubmit="return confirm('Xóa truyện này?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="danger">Xóa</button></form>
+  </td></tr>{% endfor %}</table></div>
+
+  <h2>Người dùng</h2>
+  <div class="tablewrap"><table><tr><th>ID</th><th>Tài khoản</th><th>Quyền</th><th>Ngày tạo</th><th>Đổi quyền</th></tr>
+  {% for u in users %}<tr><td>{{u.id}}</td><td>{{u.username}}</td><td>{{u.role}}</td><td>{{u.created_at}}</td><td>
+    {% if u.id != me.id %}<form method="post" action="{{url_for('admin_user_role',uid=u.id)}}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><select name="role"><option value="user" {%if u.role=='user'%}selected{%endif%}>user</option><option value="admin" {%if u.role=='admin'%}selected{%endif%}>admin</option></select><button>Lưu</button></form>{% endif %}
+  </td></tr>{% endfor %}</table></div>
+
+  <h2>Kiểm duyệt bình luận</h2>
+  <div class="comments">{% for c in comments %}<div class="comment"><b>{{c.user.username}} · {{c.manga.title}}</b><small>{{c.created_at}}</small><p>{{c.body}}</p><form method="post" action="{{url_for('admin_comment_delete',cid=c.id)}}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="danger">Xóa bình luận</button></form></div>{% else %}<p>Chưa có bình luận.</p>{% endfor %}</div>
+</section>
+{% endblock %}
