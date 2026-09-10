@@ -1,1 +1,22 @@
-{% extends "base.html" %}{% block content %}<main class="wrap admin-layout"><aside><h3>BMANGA ADMIN</h3><a href="{{url_for('admin')}}">Dashboard</a><a href="{{url_for('admin_manga')}}">Truyện</a><a href="{{url_for('admin_import_series')}}">📦 Import cả bộ</a>{% if me.role=='admin' %}<a href="{{url_for('admin_users')}}">Thành viên</a><a href="{{url_for('admin_teams')}}">Nhóm dịch</a>{% endif %}<a href="{{url_for('admin_comments')}}">Bình luận</a><a href="{{url_for('admin_reports')}}">Báo lỗi</a>{% if me.role=='admin' %}<a href="{{url_for('admin_banners')}}">Banner</a><a href="{{url_for('admin_settings')}}">Cài đặt</a><a href="{{url_for('admin_export')}}">⬇ Backup JSON</a>{% endif %}</aside><section>{% block admin_content %}{% endblock %}</section></main>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<main class="wrap admin-layout">
+  <aside>
+    <h3>BMANGA ADMIN</h3>
+    <a href="{{url_for('admin')}}">Dashboard</a>
+    <a href="{{url_for('admin_manga')}}">Truyện</a>
+    {% if me.role=='admin' %}
+      <a href="{{url_for('admin_users')}}">Thành viên</a>
+      <a href="{{url_for('admin_teams')}}">Nhóm dịch</a>
+    {% endif %}
+    <a href="{{url_for('admin_comments')}}">Bình luận</a>
+    <a href="{{url_for('admin_reports')}}">Báo lỗi</a>
+    {% if me.role=='admin' %}
+      <a href="{{url_for('admin_banners')}}">Banner</a>
+      <a href="{{url_for('admin_settings')}}">Cài đặt</a>
+      <a href="{{url_for('admin_export')}}">⬇ Backup JSON</a>
+    {% endif %}
+  </aside>
+  <section>{% block admin_content %}{% endblock %}</section>
+</main>
+{% endblock %}

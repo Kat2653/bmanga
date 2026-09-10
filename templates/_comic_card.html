@@ -1,1 +1,20 @@
-<article class="comic"><a class="comic-cover" href="{{url_for('manga_detail',slug=m.slug)}}">{% if m.cover %}<img src="{{m.cover}}" loading="lazy">{% else %}<div class="cover-placeholder">BMANGA</div>{% endif %}<span class="time-badge">Mới</span>{% if m.featured %}<span class="hot-badge">Hot</span>{% endif %}<span class="bookmark">♡</span></a><a class="comic-name" href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a><div class="comic-meta">{% if m.latest %}<a href="{{url_for('read_chapter',chapter_id=m.latest.id)}}">Ch. {{'%g'|format(m.latest.number)}}</a>{% else %}<span>Chưa có chap</span>{% endif %}<small>👁 {{m.views}}</small></div></article>
+<article class="comic comic-qq">
+  <a class="comic-cover" href="{{url_for('manga_detail',slug=m.slug)}}">
+    {% if m.cover %}
+      <img src="{{m.cover}}" loading="lazy" alt="{{m.title}}">
+    {% else %}
+      <div class="cover-placeholder">BMANGA</div>
+    {% endif %}
+    <span class="time-badge">Mới</span>
+    {% if m.featured %}<span class="hot-badge">Hot</span>{% endif %}
+    <span class="bookmark">🔖</span>
+  </a>
+  <a class="comic-name" href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a>
+  <div class="comic-meta qq-comic-meta">
+    {% if m.latest %}
+      <a href="{{url_for('read_chapter',chapter_id=m.latest.id)}}">Chương {{'%g'|format(m.latest.number)}}</a>
+    {% else %}
+      <span>Chưa có chap</span>
+    {% endif %}
+  </div>
+</article>

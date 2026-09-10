@@ -1,6 +1,69 @@
-{% extends "base.html" %}{% block title %}{{site_name}} — Đọc truyện online{% endblock %}{% block content %}<main class="wrap home">
-{% if banners %}<section class="banner-strip">{% for b in banners[:3] %}<a href="{{b.link or '#'}}" class="banner-card">{% if b.image %}<img src="{{b.image}}" alt="{{b.title}}">{% endif %}<span><b>{{b.title}}</b><small>{{b.subtitle}}</small></span></a>{% endfor %}</section>{% endif %}
-<div class="category-strip"><b>📚 Đọc Truyện Tranh Online Mới Nhất</b><div><a href="{{url_for('search',genre='Action')}}">Action</a><a href="{{url_for('search',genre='Romance')}}">Romance</a><a href="{{url_for('search',type='Manhwa')}}">Manhwa</a><a href="{{url_for('search',type='Manhua')}}">Manhua</a></div></div>
-<section class="shelf"><div class="shelf-title"><h2>★ Truyện Hay</h2><a href="{{url_for('search',sort='follows')}}">Xem thêm ›</a></div><div class="comic-grid">{% for m in featured %}{% include '_comic_card.html' %}{% else %}<p>Chưa có truyện nổi bật.</p>{% endfor %}</div></section>
-<div class="content-cols"><section class="latest-panel"><div class="shelf-title"><h2>🕘 Mới Cập Nhật</h2><a href="{{url_for('search')}}">Tất cả ›</a></div>{% for m in latest %}<article class="update-row"><a class="mini-cover" href="{{url_for('manga_detail',slug=m.slug)}}">{% if m.cover %}<img src="{{m.cover}}">{% else %}<span>B</span>{% endif %}</a><div class="update-main"><a class="update-title" href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a><small>{{m.genres or m.type}}</small></div><div class="update-chap">{% if m.latest %}<a href="{{url_for('read_chapter',chapter_id=m.latest.id)}}">Chương {{'%g'|format(m.latest.number)}}</a><small>{{m.latest.views}} lượt đọc</small>{% else %}<span>Chưa có chương</span>{% endif %}</div></article>{% endfor %}</section>
-<aside class="rank-panel"><div class="shelf-title"><h2>🔥 Xem Nhiều</h2><a href="{{url_for('rankings')}}">Top 100 ›</a></div>{% for m in popular %}<div class="rank-row"><b>{{loop.index}}</b><a href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a><small>👁 {{m.views}}</small></div>{% endfor %}<div class="shelf-title sub"><h2>❤ Theo Dõi Nhiều</h2></div>{% for m in followed[:5] %}<div class="rank-row"><b>{{loop.index}}</b><a href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a><small>❤ {{m.follows}}</small></div>{% endfor %}</aside></div></main>{% endblock %}
+{% extends "base.html" %}
+{% block title %}{{site_name}} — Đọc truyện online{% endblock %}
+{% block content %}
+<main class="wrap home home-qq">
+  <section class="quick-links">
+    <a class="quick-card red" href="{{url_for('rankings')}}">🏆 <span>Top Tháng</span></a>
+    <a class="quick-card blue" href="{{url_for('search',type='Manga')}}">📘 <span>Manga</span></a>
+    <a class="quick-card green" href="{{url_for('search',type='Manhwa')}}">🤍 <span>Manhwa</span></a>
+    <a class="quick-card orange" href="{{url_for('search',type='Manhua')}}">🏷 <span>Manhua</span></a>
+  </section>
+
+  <section class="social-strip">
+    <div class="social-title">Đọc Truyện Tranh Online Mới Nhất</div>
+    <div class="social-links">
+      <a href="#">f</a>
+      <a href="#">👥</a>
+      <a href="#">💬</a>
+      <a href="#">✈</a>
+    </div>
+  </section>
+
+  <section class="shelf qq-shelf">
+    <div class="shelf-title"><h2>★ Truyện Hay</h2><a href="{{url_for('search',sort='follows')}}">Xem thêm ›</a></div>
+    <div class="comic-grid qq-grid">
+      {% for m in featured %}
+        {% include '_comic_card.html' %}
+      {% else %}
+        <p>Chưa có truyện nổi bật.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="content-cols content-cols-qq">
+    <section class="latest-panel qq-panel">
+      <div class="shelf-title"><h2>🕘 Mới Cập Nhật</h2><a href="{{url_for('search')}}">Tất cả ›</a></div>
+      {% for m in latest %}
+        <article class="update-row qq-update-row">
+          <a class="mini-cover" href="{{url_for('manga_detail',slug=m.slug)}}">
+            {% if m.cover %}<img src="{{m.cover}}" alt="{{m.title}}">{% else %}<span>B</span>{% endif %}
+          </a>
+          <div class="update-main">
+            <a class="update-title" href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a>
+            <small>{{m.genres or m.type}}</small>
+          </div>
+          <div class="update-chap">
+            {% if m.latest %}
+              <a href="{{url_for('read_chapter',chapter_id=m.latest.id)}}">Chương {{'%g'|format(m.latest.number)}}</a>
+              <small>{{m.latest.views}} lượt đọc</small>
+            {% else %}
+              <span>Chưa có chương</span>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+
+    <aside class="rank-panel qq-panel">
+      <div class="shelf-title"><h2>🔥 Xem Nhiều</h2><a href="{{url_for('rankings')}}">Top 100 ›</a></div>
+      {% for m in popular %}
+        <div class="rank-row"><b>{{loop.index}}</b><a href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a><small>👁 {{m.views}}</small></div>
+      {% endfor %}
+      <div class="shelf-title sub"><h2>❤ Theo Dõi Nhiều</h2></div>
+      {% for m in followed[:5] %}
+        <div class="rank-row"><b>{{loop.index}}</b><a href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a><small>❤ {{m.follows}}</small></div>
+      {% endfor %}
+    </aside>
+  </div>
+</main>
+{% endblock %}

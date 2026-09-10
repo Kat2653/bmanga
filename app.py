@@ -586,31 +586,7 @@ def admin_chapter_zip_import(mid):
 @app.route('/admin/import-series',methods=['GET','POST'])
 @staff_required
 def admin_import_series():
-    if request.method=='POST':
-        zf=request.files.get('zip_file')
-        if not zf or not zf.filename.lower().endswith('.zip'): flash('Hãy chọn file ZIP.','danger'); return redirect(request.url)
-        with tempfile.TemporaryDirectory() as td:
-            zp=Path(td)/'series.zip'; zf.save(zp)
-            try:
-                with zipfile.ZipFile(zp) as z:
-                    infos=_zip_infos(z); meta={}
-                    metadata=next((i for i in infos if Path(i.filename).name.lower()=='metadata.json' and _safe_member(i.filename)),None)
-                    if metadata:
-                        meta=json.loads(z.read(metadata).decode('utf-8-sig'))
-                    title=(meta.get('title') or request.form.get('title') or Path(zf.filename).stem).strip()
-                    if not title: raise ValueError('Thiếu tên truyện.')
-                    m=Manga(title=title,slug=unique_slug(meta.get('slug') or title),alt_title=meta.get('alt_title',''),author=meta.get('author',''),artist=meta.get('artist',''),description=meta.get('description',''),genres=','.join(meta.get('genres',[])) if isinstance(meta.get('genres'),list) else meta.get('genres',''),type=meta.get('type','Manga'),status=meta.get('status','Đang tiến hành'),featured=bool(meta.get('featured',False)),mature=bool(meta.get('mature',False)))
-                    db.session.add(m); db.session.flush()
-                    coverinfo=next((i for i in infos if Path(i.filename).name.lower() in {'cover.jpg','cover.jpeg','cover.png','cover.webp'} and _safe_member(i.filename)),None)
-                    if coverinfo:
-                        ext=Path(coverinfo.filename).suffix.lower(); cp=Path(td)/f'cover{ext}'
-                        with z.open(coverinfo) as src, open(cp,'wb') as out: shutil.copyfileobj(src,out)
-                        m.cover=upload_image(cp,'covers')
-                    created,skipped=_import_chapter_groups(z,infos,m,td,True); db.session.commit(); flash(f'Đã tạo {m.title} và import {created} chương.','success'); return redirect(url_for('admin_chapters',mid=m.id))
-            except Exception as e:
-                db.session.rollback(); flash(f'Import thất bại: {e}','danger')
-        return redirect(request.url)
-    return render_template('admin/import_series.html')
+    abort(404)
 
 @app.route('/admin/chapter/<int:cid>/edit',methods=['GET','POST'])
 @staff_required
