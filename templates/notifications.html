@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<main class="wrap"><h1>Thông báo</h1><div class="chapters">{% for n in rows %}<a href="{{n.url or '#'}}"><b>{{n.message}}</b><span>{{n.created_at.strftime('%d/%m/%Y %H:%M')}}</span></a>{% else %}<p>Chưa có thông báo.</p>{% endfor %}</div></main>{% endblock %}
