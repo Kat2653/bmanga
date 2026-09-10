@@ -290,3 +290,225 @@ body.modal-open{overflow:hidden}
     padding-top:0!important;
   }
 }
+
+
+/* ===== V6 READER: header trên như trang thường, thanh chương chỉ ở dưới ===== */
+.reader-page-normal-head{
+  background:#2d2d2f;
+  padding-bottom:72px;
+}
+.reader-page-normal-head .site-head{
+  display:block!important;
+}
+.reader-page-normal-head footer{
+  display:none;
+}
+.reader-normal-page{
+  background:#2d2d2f;
+  min-height:100vh;
+}
+.reader-info-card{
+  padding:18px 10px 14px;
+}
+.reader-info-inner{
+  width:min(900px,100%);
+  margin:auto;
+  background:#fff;
+  color:#333;
+  border-radius:12px;
+  padding:20px 22px;
+  text-align:center;
+}
+.reader-info-breadcrumb{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:10px;
+  text-align:left;
+  color:#555;
+  margin-bottom:18px;
+}
+.reader-info-breadcrumb a{color:#444}
+.reader-info-inner h1{
+  margin:0;
+  font-size:24px;
+  font-weight:500;
+}
+.reader-updated{
+  color:#777;
+  margin:10px 0;
+}
+.reader-help-text{
+  color:#555;
+  line-height:1.6;
+  margin:14px auto;
+}
+.reader-inline-report button{
+  border:0;
+  border-radius:7px;
+  padding:10px 18px;
+  background:#f0a83c;
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+}
+.reader-stage-v6{
+  padding:0!important;
+  border:0!important;
+  background:#2d2d2f!important;
+}
+.reader-stage-v6 .reader.vertical{
+  width:min(900px,100%);
+}
+.reader-stage-v6 .reader-page{
+  margin:0;
+  padding:0;
+  background:#2d2d2f;
+}
+.reader-stage-v6 .reader-page img{
+  display:block;
+  width:auto!important;
+  max-width:100%!important;
+  height:auto!important;
+  margin:0 auto;
+}
+.reader-end-actions{
+  display:flex;
+  justify-content:center;
+  padding:24px 12px 28px;
+}
+.reader-end-actions a{
+  background:#fff;
+  color:#333;
+  border-radius:7px;
+  padding:10px 16px;
+}
+
+/* Chỉ 1 thanh cố định dưới */
+.reader-bottom-only{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:999;
+  background:#242526;
+  border-top:1px solid #3b3c3d;
+  padding:7px max(8px,env(safe-area-inset-right))
+          calc(7px + env(safe-area-inset-bottom))
+          max(8px,env(safe-area-inset-left));
+}
+.reader-bottom-only-inner{
+  width:min(520px,100%);
+  margin:auto;
+  display:grid;
+  grid-template-columns:44px 44px 46px minmax(120px,1fr) 46px 48px;
+  gap:7px;
+  align-items:center;
+}
+.rb-icon,.rb-circle,.rb-heart{
+  height:44px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#fff;
+  font-size:29px;
+  line-height:1;
+  cursor:pointer;
+}
+.rb-icon{font-size:27px}
+.rb-circle{
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  font-size:42px;
+}
+.rb-circle.disabled{
+  background:#555;
+  color:#252525;
+  opacity:.85;
+}
+.rb-select{
+  width:100%;
+  height:44px;
+  border:0;
+  border-radius:4px;
+  padding:0 10px;
+  background:#fff;
+  color:#222;
+  font-size:15px;
+}
+.rb-follow-form{margin:0}
+.rb-heart{
+  width:100%;
+  background:#e9e9e9;
+  color:#111;
+  font-size:25px;
+}
+.rb-heart.active{color:#e73658}
+.reader-top-v6{bottom:76px!important}
+
+/* Nếu CSS cũ còn cache, ép tắt thanh reader phía trên cũ */
+.reader-page-normal-head .floating-reader-bar-top,
+.reader-page-normal-head .floating-reader-bar-bottom,
+.reader-page-normal-head .reader-compact-head{
+  display:none!important;
+}
+
+/* Restore JSON */
+.restore-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:18px;
+}
+.restore-form{max-width:620px}
+.restore-check{grid-template-columns:auto 1fr!important}
+.restore-note{
+  margin-top:18px;
+  background:#fff7df;
+  border:1px solid #f1d486;
+  border-radius:7px;
+  padding:12px;
+  line-height:1.6;
+}
+
+@media(max-width:700px){
+  .reader-page-normal-head{padding-bottom:67px}
+  .reader-info-card{padding:14px 0 10px}
+  .reader-info-inner{
+    width:100%;
+    border-radius:10px;
+    padding:18px 16px;
+  }
+  .reader-info-breadcrumb{
+    font-size:14px;
+    gap:7px;
+    margin-bottom:14px;
+  }
+  .reader-info-inner h1{
+    font-size:21px;
+    line-height:1.4;
+  }
+  .reader-help-text{font-size:15px}
+  .reader-stage-v6 .reader.vertical{width:100%}
+  .reader-stage-v6 .reader-page img{width:100%!important}
+  .reader-bottom-only{
+    padding-top:6px;
+    padding-bottom:calc(6px + env(safe-area-inset-bottom));
+  }
+  .reader-bottom-only-inner{
+    grid-template-columns:40px 40px 42px minmax(105px,1fr) 42px 44px;
+    gap:5px;
+  }
+  .rb-icon,.rb-circle,.rb-heart,.rb-select{height:42px}
+  .rb-icon{font-size:25px}
+  .rb-circle{font-size:38px}
+  .rb-select{
+    font-size:14px;
+    padding:0 7px;
+  }
+  .rb-heart{font-size:23px}
+  .reader-top-v6{bottom:70px!important}
+}

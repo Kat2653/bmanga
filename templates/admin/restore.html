@@ -1,0 +1,36 @@
+{% extends "admin/_base.html" %}
+{% block admin_content %}
+<div class="shelf-title">
+  <h1>⬆ Restore JSON</h1>
+</div>
+
+<div class="restore-card">
+  <p><b>Khôi phục dữ liệu từ file Backup JSON của Bmanga.</b></p>
+  <p>Truyện có cùng slug sẽ được cập nhật; truyện/chương còn thiếu sẽ được tạo lại. Tài khoản người dùng không bị xóa.</p>
+
+  <form class="adminform restore-form" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+
+    <label>
+      File backup .json
+      <input type="file" name="backup_file" accept=".json,application/json" required>
+    </label>
+
+    <label class="check restore-check">
+      <input type="checkbox" name="restore_settings" value="1" checked>
+      Khôi phục cài đặt website
+    </label>
+
+    <label class="check restore-check">
+      <input type="checkbox" name="confirm_restore" value="1" required>
+      Tôi xác nhận muốn khôi phục dữ liệu từ file này
+    </label>
+
+    <button class="btn primary" type="submit">⬆ Bắt đầu Restore</button>
+  </form>
+
+  <div class="restore-note">
+    <b>Lưu ý:</b> nếu file ảnh thật đã bị xóa khỏi nơi lưu ảnh, Restore chỉ có thể khôi phục URL đã lưu trong JSON.
+  </div>
+</div>
+{% endblock %}

@@ -679,10 +679,176 @@ def admin_settings():
 @app.get('/admin/export')
 @admin_required
 def admin_export():
-    payload={'exported_at':utcnow().isoformat()+'Z','settings':{x.key:x.value for x in SiteSetting.query.all()},'manga':[]}
+    payload={
+        'export_version':2,
+        'exported_at':utcnow().isoformat()+'Z',
+        'settings':{x.key:x.value for x in SiteSetting.query.all()},
+        'manga':[]
+    }
     for m in Manga.query.order_by(Manga.id).all():
-        payload['manga'].append({'title':m.title,'slug':m.slug,'alt_title':m.alt_title,'author':m.author,'artist':m.artist,'description':m.description,'genres':m.genres,'type':m.type,'status':m.status,'cover':m.cover,'featured':m.featured,'mature':m.mature,'chapters':[{'number':c.number,'title':c.title,'pages':json.loads(c.pages_json or '[]'),'is_published':c.is_published} for c in Chapter.query.filter_by(manga_id=m.id).order_by(Chapter.number).all()]})
-    data=json.dumps(payload,ensure_ascii=False,indent=2).encode('utf-8'); return send_file(io.BytesIO(data),mimetype='application/json',as_attachment=True,download_name=f'bmanga-backup-{datetime.utcnow().strftime("%Y%m%d-%H%M")}.json')
+        payload['manga'].append({
+            'title':m.title,
+            'slug':m.slug,
+            'alt_title':m.alt_title,
+            'author':m.author,
+            'artist':m.artist,
+            'description':m.description,
+            'genres':m.genres,
+            'type':m.type,
+            'status':m.status,
+            'cover':m.cover,
+            'featured':m.featured,
+            'mature':m.mature,
+            'views':m.views,
+            'follows':m.follows,
+            'chapters':[
+                {
+                    'number':c.number,
+                    'title':c.title,
+                    'pages':json.loads(c.pages_json or '[]'),
+                    'views':c.views,
+                    'is_published':c.is_published,
+                    'published_at':c.published_at.isoformat() if c.published_at else None
+                }
+                for c in Chapter.query.filter_by(manga_id=m.id).order_by(Chapter.number).all()
+            ]
+        })
+    data=json.dumps(payload,ensure_ascii=False,indent=2).encode('utf-8')
+    return send_file(
+        io.BytesIO(data),
+        mimetype='application/json',
+        as_attachment=True,
+        download_name=f'bmanga-backup-{datetime.utcnow().strftime("%Y%m%d-%H%M")}.json'
+    )
+
+@app.route('/admin/restore',methods=['GET','POST'])
+@admin_required
+def admin_restore():
+    if request.method=='POST':
+        if not request.form.get('confirm_restore'):
+            flash('Bạn phải xác nhận trước khi Restore.','danger')
+            return redirect(request.url)
+
+        f=request.files.get('backup_file')
+        if not f or not f.filename.lower().endswith('.json'):
+            flash('Hãy chọn đúng file Backup JSON.','danger')
+            return redirect(request.url)
+
+        try:
+            raw=f.read()
+            if len(raw) > 50*1024*1024:
+                raise ValueError('File backup quá lớn.')
+
+            payload=json.loads(raw.decode('utf-8-sig'))
+            if not isinstance(payload,dict) or not isinstance(payload.get('manga',[]),list):
+                raise ValueError('File không đúng định dạng Backup JSON của Bmanga.')
+
+            if request.form.get('restore_settings') and isinstance(payload.get('settings'),dict):
+                for key,value in payload['settings'].items():
+                    if isinstance(key,str) and len(key)<=100:
+                        set_setting(key,'' if value is None else str(value))
+
+            manga_created=0
+            manga_updated=0
+            chapter_created=0
+            chapter_updated=0
+
+            for item in payload.get('manga',[]):
+                if not isinstance(item,dict):
+                    continue
+
+                title=str(item.get('title') or '').strip()
+                slug=str(item.get('slug') or '').strip()
+                if not title:
+                    continue
+                if not slug:
+                    slug=slugify(title)
+
+                m=Manga.query.filter_by(slug=slug).first()
+                if m is None:
+                    m=Manga(title=title,slug=unique_slug(slug))
+                    db.session.add(m)
+                    db.session.flush()
+                    manga_created+=1
+                else:
+                    manga_updated+=1
+
+                m.title=title
+                m.alt_title=str(item.get('alt_title') or '')
+                m.author=str(item.get('author') or '')
+                m.artist=str(item.get('artist') or '')
+                m.description=str(item.get('description') or '')
+                m.genres=str(item.get('genres') or '')
+                m.type=str(item.get('type') or 'Manga')
+                m.status=str(item.get('status') or 'Đang tiến hành')
+                m.cover=str(item.get('cover') or '')
+                m.featured=bool(item.get('featured',False))
+                m.mature=bool(item.get('mature',False))
+                try:
+                    m.views=max(0,int(item.get('views',m.views or 0)))
+                except Exception:
+                    pass
+                try:
+                    m.follows=max(0,int(item.get('follows',m.follows or 0)))
+                except Exception:
+                    pass
+                m.updated_at=utcnow()
+
+                chapters=item.get('chapters',[])
+                if not isinstance(chapters,list):
+                    continue
+
+                for ci in chapters:
+                    if not isinstance(ci,dict):
+                        continue
+                    try:
+                        number=float(ci.get('number'))
+                    except Exception:
+                        continue
+
+                    c=Chapter.query.filter_by(manga_id=m.id,number=number).first()
+                    if c is None:
+                        c=Chapter(manga_id=m.id,number=number)
+                        db.session.add(c)
+                        chapter_created+=1
+                    else:
+                        chapter_updated+=1
+
+                    c.title=str(ci.get('title') or '')
+                    pages=ci.get('pages',[])
+                    if not isinstance(pages,list):
+                        pages=[]
+                    c.pages_json=json.dumps([str(x) for x in pages if x],ensure_ascii=False)
+                    c.is_published=bool(ci.get('is_published',True))
+                    try:
+                        c.views=max(0,int(ci.get('views',c.views or 0)))
+                    except Exception:
+                        pass
+
+                    published_at=ci.get('published_at')
+                    if published_at:
+                        try:
+                            c.published_at=datetime.fromisoformat(
+                                str(published_at).replace('Z','+00:00')
+                            ).replace(tzinfo=None)
+                        except Exception:
+                            pass
+
+            db.session.commit()
+            flash(
+                f'Restore thành công: {manga_created} truyện mới, {manga_updated} truyện cập nhật, '
+                f'{chapter_created} chương mới, {chapter_updated} chương cập nhật.',
+                'success'
+            )
+            return redirect(url_for('admin_manga'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Restore thất bại: {e}','danger')
+            return redirect(request.url)
+
+    return render_template('admin/restore.html')
+
 
 @app.get('/sitemap.xml')
 def sitemap():

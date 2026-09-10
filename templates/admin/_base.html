@@ -15,6 +15,7 @@
       <a href="{{url_for('admin_banners')}}">Banner</a>
       <a href="{{url_for('admin_settings')}}">Cài đặt</a>
       <a href="{{url_for('admin_export')}}">⬇ Backup JSON</a>
+      <a href="{{url_for('admin_restore')}}">⬆ Restore JSON</a>
     {% endif %}
   </aside>
   <section>{% block admin_content %}{% endblock %}</section>

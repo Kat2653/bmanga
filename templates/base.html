@@ -7,7 +7,7 @@
   <meta name="description" content="{{site_description}}">
   <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 <header class="site-head qq-head">
   <div class="wrap head-main qq-head-row">
     <a class="brand qq-brand" href="{{url_for('home')}}" aria-label="Bmanga">
