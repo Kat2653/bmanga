@@ -32,27 +32,3 @@ pip install -r requirements.txt
 python app.py
 ```
 
-## Import cả bộ bằng ZIP
-Trong Admin -> Import cả bộ. ZIP khuyên dùng:
-```text
-metadata.json
-cover.jpg
-Chapter 1/001.jpg
-Chapter 1/002.jpg
-Chapter 2/001.jpg
-```
-
-`metadata.json` ví dụ:
-```json
-{
-  "title": "Tên truyện",
-  "author": "Tác giả",
-  "artist": "Họa sĩ",
-  "genres": ["Comedy", "Romance"],
-  "type": "Manga",
-  "status": "Đang tiến hành",
-  "description": "Mô tả"
-}
-```
-
-Chỉ upload nội dung bạn có quyền phân phối.

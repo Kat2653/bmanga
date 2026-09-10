@@ -174,3 +174,119 @@ body.modal-open{overflow:hidden}
   .menu-head-btn{width:46px;height:44px}
   .qq-brand .brand-icon{width:46px;height:46px}
 }
+
+
+/* ===== READER V4: fixed top + bottom navigation ===== */
+.reader-with-fixed-bars{padding-top:54px;padding-bottom:58px;background:#2e2f31}
+.floating-reader-bar{position:fixed;left:0;right:0;z-index:1000;background:#242526;border-color:#3a3b3d;box-shadow:0 2px 9px #0005}
+.floating-reader-bar-top{top:0;border-bottom:1px solid #3a3b3d}
+.floating-reader-bar-bottom{bottom:0;border-top:1px solid #3a3b3d;padding-bottom:env(safe-area-inset-bottom)}
+.floating-reader-inner{height:54px;width:min(920px,calc(100% - 16px));margin:auto;display:flex;align-items:center;justify-content:center;gap:8px}
+.reader-icon-btn,.reader-round-nav{border:0;text-decoration:none;display:grid;place-items:center;color:#fff;cursor:pointer;flex:0 0 auto}
+.reader-icon-btn{width:37px;height:37px;background:transparent;font-size:29px;line-height:1}
+.reader-icon-btn:hover{color:#dfe7ff}
+.reader-round-nav{width:38px;height:38px;border-radius:50%;background:#fff;color:#111;font-size:37px;line-height:32px;font-family:Arial,sans-serif}
+.reader-round-nav:hover{background:#eceff4}
+.reader-round-nav.disabled{background:#5d5e61;color:#28292b;opacity:.75;cursor:not-allowed}
+.floating-chapter-select{height:38px;width:min(390px,40vw);min-width:180px;border:1px solid #a9adb6;border-radius:2px;background:#f5f5f7;color:#222;padding:0 10px;font-size:14px;outline:none}
+.floating-follow-form{margin:0}
+.floating-follow-btn{height:38px;border:0;border-radius:3px;background:#c9c9c9;color:#171717;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:14px;white-space:nowrap;cursor:pointer;text-decoration:none}
+.floating-follow-btn.active{background:#ff6f86;color:#fff}
+.reader-intro{padding-top:10px;padding-bottom:10px}
+.reader-mini-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 12px}
+.reader-mini-tools button,.reader-back-series,.reader-report button{border:1px solid #555c69;background:#34363a;color:#fff;border-radius:5px;padding:9px 12px;cursor:pointer}
+.reader-mini-tools button.active{background:#5368d7;border-color:#5368d7}
+.reader-after-pages{display:flex;align-items:center;justify-content:center;gap:12px;padding:18px 0 24px}
+.reader-back-series{display:inline-block}
+.reader-report{margin:0}
+.reader-stage{padding-top:0;padding-bottom:0}
+.reader.vertical .reader-page{line-height:0}
+.reader.vertical .reader-page img{vertical-align:top}
+.reader-top-button{bottom:72px}
+
+@media(max-width:700px){
+  .reader-with-fixed-bars{padding-top:50px;padding-bottom:calc(52px + env(safe-area-inset-bottom))}
+  .floating-reader-inner{height:50px;width:calc(100% - 8px);gap:4px}
+  .reader-icon-btn{width:30px;height:34px;font-size:25px}
+  .reader-round-nav{width:34px;height:34px;font-size:31px}
+  .floating-chapter-select{height:34px;min-width:0;width:auto;flex:1;max-width:48vw;font-size:12px;padding:0 5px}
+  .floating-follow-btn{height:34px;padding:0 8px;font-size:12px}
+  .floating-follow-btn span{display:none}
+  .reader-intro{padding-left:4px;padding-right:4px}
+  .reader-breadcrumb{font-size:12px}
+  .reader-heading h1{font-size:16px}
+  .reader-mini-tools button{font-size:11px;padding:8px}
+  .reader-after-pages{flex-wrap:wrap;padding-bottom:18px}
+  .reader-top-button{bottom:66px}
+}
+
+@media(max-width:390px){
+  .floating-reader-inner{gap:2px}
+  .reader-icon-btn{width:27px;font-size:22px}
+  .reader-round-nav{width:31px;height:31px;font-size:28px}
+  .floating-chapter-select{max-width:43vw;font-size:11px}
+  .floating-follow-btn{width:31px;padding:0}
+}
+
+
+/* ===== READER V5: immersive mode ===== */
+/* Khi vào chương đọc: tuyệt đối không hiện header/search/login/menu của trang chính */
+.reader-body .site-head,
+.reader-body .qq-mobile-header,
+.reader-body .menu-bar,
+.reader-body .menu-overlay,
+.reader-body .head-main,
+.reader-body .reader-sitebar,
+.reader-body .reader-breadcrumb {
+  display:none!important;
+}
+
+.reader-immersive{
+  margin:0;
+  background:#2e2f31;
+  color:#fff;
+}
+
+.reader-compact-head{
+  background:#17191e;
+  border-bottom:1px solid #363941;
+  padding:12px 8px 14px;
+}
+
+.reader-compact-inner{
+  width:min(920px,calc(100% - 10px));
+  margin:auto;
+}
+
+.reader-compact-title{
+  text-align:center;
+  font-size:19px;
+  font-weight:700;
+  line-height:1.35;
+  margin:4px 0 10px;
+}
+
+.reader-immersive .reader-stage{
+  margin:0;
+  border:0;
+}
+
+.reader-immersive .reader-mini-tools{
+  margin:0;
+}
+
+@media(max-width:700px){
+  .reader-compact-head{
+    padding:8px 5px 10px;
+  }
+  .reader-compact-title{
+    font-size:15px;
+    margin:2px 0 8px;
+  }
+  .reader-immersive .reader-mini-tools{
+    display:none; /* mobile ưu tiên ảnh + thanh chương cố định */
+  }
+  .reader-immersive .reader-stage{
+    padding-top:0!important;
+  }
+}

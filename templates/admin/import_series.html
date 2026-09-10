@@ -1,5 +1,0 @@
-{% extends "admin/_base.html" %}{% block admin_content %}<h1>📦 Import cả bộ bằng 1 ZIP</h1><div class="guide"><p>Cấu trúc khuyên dùng:</p><pre>metadata.json
-cover.jpg
-Chapter 1/001.jpg
-Chapter 1/002.jpg
-Chapter 2/001.jpg</pre><p><b>metadata.json</b> có thể chứa: title, slug, alt_title, author, artist, description, genres, type, status, featured, mature. Nếu không có metadata, nhập tên bên dưới.</p></div><form class="adminform" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><label>Tên truyện dự phòng<input name="title" placeholder="Dùng khi ZIP không có metadata.json"></label><label>ZIP cả bộ<input type="file" name="zip_file" accept=".zip" required></label><button class="btn primary">Tạo truyện + import chương</button></form>{% endblock %}

@@ -1,4 +1,4 @@
-import os, json, uuid, re, zipfile, tempfile, shutil, io, unicodedata, secrets
+import os, json, uuid, re, shutil, io, unicodedata, secrets
 from pathlib import Path
 from datetime import datetime
 from functools import wraps
@@ -272,53 +272,6 @@ def notify_followers(manga,chapter):
     for f in Follow.query.filter_by(manga_id=manga.id).all():
         db.session.add(Notification(user_id=f.user_id,message=f'{manga.title} vừa có Chương {chapter.number:g}',url=url_for('read_chapter',chapter_id=chapter.id)))
 
-def _natural_key(name):
-    return [int(x) if x.isdigit() else x.lower() for x in re.split(r'(\d+)',name)]
-
-def _chapter_number_from_path(path):
-    parts=path.replace('\\','/').split('/')
-    for part in reversed(parts[:-1]):
-        m=re.search(r'(?:chap(?:ter)?|chương|chuong|ch)?[\s._-]*(\d+(?:\.\d+)?)',part,re.I)
-        if m: return float(m.group(1))
-    return None
-
-def _zip_infos(z):
-    infos=[i for i in z.infolist() if not i.is_dir()]
-    if len(infos)>10000: raise ValueError('ZIP có quá nhiều file.')
-    if any(i.file_size>30*1024*1024 for i in infos): raise ValueError('Có ảnh lớn hơn 30MB.')
-    if sum(i.file_size for i in infos)>500*1024*1024: raise ValueError('Tổng dung lượng giải nén vượt 500MB.')
-    return infos
-
-def _safe_member(name):
-    p=Path(name)
-    return not p.is_absolute() and '..' not in p.parts and not name.startswith('__MACOSX/')
-
-def _import_chapter_groups(z,infos,manga,td,publish=True):
-    groups={}
-    for info in infos:
-        if not _safe_member(info.filename): continue
-        if Path(info.filename).suffix.lower() not in ALLOWED_IMAGES: continue
-        if Path(info.filename).name.lower().startswith('cover.'): continue
-        num=_chapter_number_from_path(info.filename)
-        if num is not None: groups.setdefault(num,[]).append(info)
-    created=0; skipped=[]
-    for num in sorted(groups):
-        if Chapter.query.filter_by(manga_id=manga.id,number=num).first():
-            skipped.append(f'{num:g}'); continue
-        pages=[]
-        for idx,info in enumerate(sorted(groups[num],key=lambda x:_natural_key(x.filename))):
-            ext=Path(info.filename).suffix.lower()
-            tmp=Path(td)/f'{manga.id}_{num}_{idx}{ext}'
-            with z.open(info) as src, open(tmp,'wb') as out: shutil.copyfileobj(src,out)
-            url=upload_image(tmp,f'chapters/{manga.id}/{str(num).replace(".","_")}')
-            if url: pages.append(url)
-        if pages:
-            c=Chapter(manga_id=manga.id,number=num,title='',pages_json=json.dumps(pages,ensure_ascii=False),is_published=publish)
-            db.session.add(c); db.session.flush()
-            if publish: notify_followers(manga,c)
-            created+=1
-    manga.updated_at=utcnow()
-    return created,skipped
 
 def init_db():
     db.create_all()
@@ -397,14 +350,16 @@ def read_chapter(chapter_id):
     nextc=Chapter.query.filter(Chapter.manga_id==c.manga_id,Chapter.is_published==True,Chapter.number>c.number).order_by(Chapter.number.asc()).first()
     all_chapters=Chapter.query.filter_by(manga_id=c.manga_id,is_published=True).order_by(Chapter.number.asc()).all()
     u=current_user()
+    followed=False
     if u:
+        followed=bool(Follow.query.filter_by(user_id=u.id,manga_id=c.manga_id).first())
         h=History.query.filter_by(user_id=u.id,manga_id=c.manga_id).first()
         if h: h.chapter_id=c.id; h.read_at=utcnow()
         else: db.session.add(History(user_id=u.id,manga_id=c.manga_id,chapter_id=c.id))
     db.session.commit()
     try: pages=json.loads(c.pages_json or '[]')
     except Exception: pages=[]
-    return render_template('reader.html',c=c,pages=pages,prevc=prevc,nextc=nextc,all_chapters=all_chapters)
+    return render_template('reader.html',c=c,pages=pages,prevc=prevc,nextc=nextc,all_chapters=all_chapters,followed=followed)
 
 @app.route('/team/<slug>')
 def team_detail(slug):
@@ -618,28 +573,7 @@ def admin_chapter_new(mid):
         db.session.commit(); flash('Đã đăng chương.','success'); return redirect(url_for('admin_chapters',mid=mid))
     return render_template('admin/chapter_form.html',m=m,c=None,pages=[])
 
-@app.route('/admin/manga/<int:mid>/chapters/import-zip',methods=['GET','POST'])
-@staff_required
-def admin_chapter_zip_import(mid):
-    m=db.session.get(Manga,mid) or abort(404)
-    if request.method=='POST':
-        zf=request.files.get('zip_file')
-        if not zf or not zf.filename.lower().endswith('.zip'): flash('Hãy chọn file ZIP.','danger'); return redirect(request.url)
-        with tempfile.TemporaryDirectory() as td:
-            zp=Path(td)/'upload.zip'; zf.save(zp)
-            try:
-                with zipfile.ZipFile(zp) as z:
-                    infos=_zip_infos(z); created,skipped=_import_chapter_groups(z,infos,m,td,bool(request.form.get('is_published','1'))); db.session.commit()
-                msg=f'Đã import {created} chương.' + (f' Bỏ qua: {", ".join(skipped)}.' if skipped else '')
-                flash(msg,'success')
-            except (zipfile.BadZipFile,ValueError) as e: db.session.rollback(); flash(str(e) or 'ZIP không hợp lệ.','danger')
-        return redirect(url_for('admin_chapters',mid=mid))
-    return render_template('admin/chapter_zip_import.html',m=m)
 
-@app.route('/admin/import-series',methods=['GET','POST'])
-@staff_required
-def admin_import_series():
-    abort(404)
 
 @app.route('/admin/chapter/<int:cid>/edit',methods=['GET','POST'])
 @staff_required

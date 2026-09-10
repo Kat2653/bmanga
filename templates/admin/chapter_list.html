@@ -1,1 +1,31 @@
-{% extends "admin/_base.html" %}{% block admin_content %}<div class="shelf-title"><h1>Chương — {{m.title}}</h1><div><a class="btn" href="{{url_for('admin_chapter_zip_import',mid=m.id)}}">📦 Import ZIP</a> <a class="btn primary" href="{{url_for('admin_chapter_new',mid=m.id)}}">+ Thêm chương</a></div></div><div class="table"><table><tr><th>Chương</th><th>Tiêu đề</th><th>Ảnh</th><th>View</th><th>Đăng</th><th>Thao tác</th></tr>{% for c in rows %}<tr><td>{{'%g'|format(c.number)}}</td><td>{{c.title}}</td><td>{{(c.pages_json|length)}} bytes data</td><td>{{c.views}}</td><td>{{'Có' if c.is_published else 'Ẩn'}}</td><td><a class="btn" href="{{url_for('read_chapter',chapter_id=c.id)}}">Xem</a> <a class="btn" href="{{url_for('admin_chapter_edit',cid=c.id)}}">Sửa</a> <form class="inline" method="post" action="{{url_for('admin_chapter_delete',cid=c.id)}}" onsubmit="return confirm('Xóa chương?')"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><button class="btn danger">Xóa</button></form></td></tr>{% endfor %}</table></div>{% endblock %}
+{% extends "admin/_base.html" %}
+{% block admin_content %}
+<div class="shelf-title">
+  <h1>Chương — {{m.title}}</h1>
+  <div><a class="btn primary" href="{{url_for('admin_chapter_new',mid=m.id)}}">+ Thêm chương</a></div>
+</div>
+<div class="table">
+  <table>
+    <tr><th>Chương</th><th>Tiêu đề</th><th>Ảnh</th><th>View</th><th>Đăng</th><th>Thao tác</th></tr>
+    {% for c in rows %}
+      <tr>
+        <td>{{'%g'|format(c.number)}}</td>
+        <td>{{c.title}}</td>
+        <td>{{(c.pages_json|length)}} bytes data</td>
+        <td>{{c.views}}</td>
+        <td>{{'Có' if c.is_published else 'Ẩn'}}</td>
+        <td>
+          <a class="btn" href="{{url_for('read_chapter',chapter_id=c.id)}}">Xem</a>
+          <a class="btn" href="{{url_for('admin_chapter_edit',cid=c.id)}}">Sửa</a>
+          <form class="inline" method="post" action="{{url_for('admin_chapter_delete',cid=c.id)}}" onsubmit="return confirm('Xóa chương?')">
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+            <button class="btn danger">Xóa</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">Chưa có chương.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
