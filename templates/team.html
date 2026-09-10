@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<main class="wrap"><section class="profile-head"><h1>👥 {{team.name}}</h1><p>{{team.description}}</p></section><div class="grid">{% for m in rows %}{% include '_comic_card.html' %}{% else %}<p>Nhóm chưa có truyện.</p>{% endfor %}</div></main>{% endblock %}

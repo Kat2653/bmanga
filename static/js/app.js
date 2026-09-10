@@ -1,1 +1,1 @@
-document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("form").forEach(f=>{f.addEventListener("submit",()=>{const b=f.querySelector("button[type=submit],button:not([type])");if(b){b.dataset.old=b.textContent;b.disabled=true;setTimeout(()=>{b.disabled=false;b.textContent=b.dataset.old||b.textContent},2500)}})})});
+document.querySelectorAll('form[onsubmit]').forEach(()=>{});

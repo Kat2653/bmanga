@@ -1,0 +1,4 @@
+{% extends "admin/_base.html" %}{% block admin_content %}<h1>📦 Import ZIP — {{m.title}}</h1><div class="guide"><pre>Chapter 1/001.jpg
+Chapter 1/002.jpg
+Chapter 2/001.jpg
+Chapter 2/002.jpg</pre><p>Hệ thống tự nhận số chương từ tên thư mục và sắp ảnh theo số.</p></div><form class="adminform" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><label>File ZIP<input type="file" name="zip_file" accept=".zip" required></label><label class="check"><input type="checkbox" name="is_published" value="1" checked> Đăng ngay</label><button class="btn primary">Import tất cả chương</button></form>{% endblock %}
