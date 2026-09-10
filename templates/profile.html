@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-{% block content %}
-<section class="section"><h1>Tủ truyện của tôi</h1>
-<h2>Đang theo dõi</h2>
-<div class="list">{% for m in bookmarks %}<a href="{{url_for('manga_detail',slug=m.slug)}}">{{m.title}}</a>{% else %}<p>Chưa theo dõi truyện nào.</p>{% endfor %}</div>
-<h2>Lịch sử đọc</h2>
-<div class="list">{% for h in history %}<a href="{{url_for('read_chapter',chapter_id=h.chapter_id)}}">{{h.title}} — Chương {{h.number}} <small>{{h.read_at}}</small></a>{% else %}<p>Chưa có lịch sử.</p>{% endfor %}</div>
-</section>
-{% endblock %}
