@@ -1,1 +1,18 @@
-{% extends "base.html" %}{% block content %}<main class="auth"><h1>{{'Đăng ký' if mode=='register' else 'Đăng nhập'}}</h1><form method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}">{% if mode=='register' %}<label>Tên hiển thị<input name="display_name"></label>{% endif %}<label>Tài khoản<input name="username" required autocomplete="username"></label><label>Mật khẩu<input type="password" name="password" required></label>{% if mode=='register' %}<label>Nhập lại mật khẩu<input type="password" name="confirm" required></label>{% endif %}<button class="btn primary">{{'Tạo tài khoản' if mode=='register' else 'Đăng nhập'}}</button></form></main>{% endblock %}
+{% extends "base.html" %}
+{% block title %}{{'Đăng ký' if mode=='register' else 'Đăng nhập'}} - {{site_name}}{% endblock %}
+{% block content %}
+<main class="auth qq-auth-page">
+  <h1>{{'ĐĂNG KÝ' if mode=='register' else 'ĐĂNG NHẬP'}}</h1>
+  <div class="login-rule"></div>
+  {% if mode=='login' %}<a class="google-login-btn" href="{{url_for('google_login')}}"><b>G</b><span>Đăng nhập với Google</span></a>{% endif %}
+  <form method="post" class="qq-login-form page-login-form">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+    {% if mode=='register' %}<label>Tên hiển thị<input name="display_name"></label>{% endif %}
+    <label>Email / tài khoản<input name="username" required autocomplete="username"></label>
+    <label>Mật khẩu<input type="password" name="password" required autocomplete="{{'new-password' if mode=='register' else 'current-password'}}"></label>
+    {% if mode=='register' %}<label>Nhập lại mật khẩu<input type="password" name="confirm" required autocomplete="new-password"></label>{% endif %}
+    {% if mode=='login' %}<div class="login-links"><a href="{{url_for('register')}}">Đăng ký</a><span>|</span><a href="{{url_for('forgot_password')}}">Quên mật khẩu</a></div>{% endif %}
+    <div class="login-actions"><button class="btn login-submit">{{'Tạo tài khoản' if mode=='register' else 'Đăng nhập'}}</button><a class="btn login-cancel" href="{{url_for('home')}}">Hủy</a></div>
+  </form>
+</main>
+{% endblock %}

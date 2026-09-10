@@ -8,38 +8,55 @@
   <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
 </head>
 <body>
-<header class="site-head">
-  <div class="wrap head-main">
-    <div class="brand-group">
-      <button class="mobile-menu-btn" type="button" aria-label="Mở menu" data-menu-toggle>☰</button>
-      <a class="brand" href="{{url_for('home')}}">
-        <span class="brand-icon">B</span>
-        <b>BMANGA</b>
-      </a>
-    </div>
+<header class="site-head qq-head">
+  <div class="wrap head-main qq-head-row">
+    <a class="brand qq-brand" href="{{url_for('home')}}" aria-label="Bmanga">
+      <span class="brand-icon">B</span>
+      <b>BMANGA</b>
+    </a>
 
-    <form class="main-search" action="{{url_for('search')}}">
+    <form class="main-search desktop-search" action="{{url_for('search')}}">
       <input name="q" value="{{request.args.get('q','')}}" placeholder="Bạn muốn tìm truyện gì?">
       <button type="submit" aria-label="Tìm kiếm">🔍</button>
     </form>
 
-    <div class="account">
+    <div class="qq-mobile-actions">
+      <button class="round-action help-action" type="button" aria-label="Trợ giúp" title="Trợ giúp">💡</button>
+      <button class="round-action search-action" type="button" aria-label="Mở tìm kiếm" data-search-toggle>⌕</button>
+      {% if me %}
+        <a class="login-head-btn" href="{{url_for('profile')}}">{{(me.display_name or me.username)[:9]}}</a>
+      {% else %}
+        <button class="login-head-btn" type="button" data-login-toggle>Đăng nhập</button>
+      {% endif %}
+      <button class="menu-head-btn" type="button" aria-label="Mở menu" data-menu-toggle><span>☰</span></button>
+    </div>
+
+    <div class="account desktop-account">
       {% if me %}
         <a class="account-btn" href="{{url_for('profile')}}">👤 {{me.display_name or me.username}}</a>
         <a class="account-btn primary" href="{{url_for('logout')}}">Đăng xuất</a>
       {% else %}
         <a class="account-btn" href="{{url_for('register')}}">Đăng ký</a>
-        <a class="account-btn primary" href="{{url_for('login')}}">Đăng nhập</a>
+        <button class="account-btn primary login-desktop-trigger" type="button" data-login-toggle>Đăng nhập</button>
       {% endif %}
     </div>
   </div>
 
+  <div class="mobile-search-panel" data-search-panel>
+    <div class="wrap">
+      <form class="mobile-search-form" action="{{url_for('search')}}">
+        <input name="q" value="{{request.args.get('q','')}}" placeholder="Bạn muốn tìm truyện gì?" autofocus>
+        <button type="submit" aria-label="Tìm">⌕</button>
+      </form>
+    </div>
+  </div>
+
   <div class="menu-overlay" data-menu-overlay></div>
-  <div class="menu-bar" data-menu-panel>
-    <div class="wrap menu">
+  <div class="menu-bar qq-menu-bar" data-menu-panel>
+    <div class="wrap menu qq-menu">
       <a href="{{url_for('home')}}">Trang Chủ</a>
-      <a href="{{url_for('search')}}">Thể Loại</a>
-      <a href="{{url_for('rankings')}}">Xếp Hạng</a>
+      <a href="{{url_for('search')}}">Thể Loại <span class="menu-caret">▾</span></a>
+      <a href="{{url_for('rankings')}}">Xếp Hạng <span class="menu-caret">▾</span></a>
       <a href="{{url_for('search')}}">Tìm Truyện</a>
       <a href="{{url_for('profile')}}#history">Lịch Sử</a>
       <a href="{{url_for('profile')}}#follow">Theo Dõi</a>
@@ -47,31 +64,38 @@
       <a href="{{url_for('search',genre='Romance')}}">Romance</a>
       <a href="{{url_for('search',type='Manhua')}}">Manhua</a>
       <a href="{{url_for('search',type='Novel')}}">Truyện chữ</a>
-      {% if me %}
-        <a href="{{url_for('notifications')}}">Thông Báo{% if unread_notifications %} ({{unread_notifications}}){% endif %}</a>
-      {% endif %}
-      {% if me and is_staff() %}
-        <a href="{{url_for('admin')}}">Admin</a>
-      {% endif %}
+      {% if me %}<a href="{{url_for('notifications')}}">Thông Báo{% if unread_notifications %} ({{unread_notifications}}){% endif %}</a>{% endif %}
+      {% if me and is_staff() %}<a href="{{url_for('admin')}}">Admin</a>{% endif %}
     </div>
   </div>
 </header>
 
-{% if announcement %}
-  <div class="wrap notice"><b>📢 Thông báo:</b> {{announcement}}</div>
-{% endif %}
-
-{% with ms=get_flashed_messages(with_categories=true) %}
-  {% for cat,m in ms %}
-    <div class="wrap flash {{cat}}">{{m}}</div>
-  {% endfor %}
-{% endwith %}
+{% if announcement %}<div class="wrap notice"><b>📢 Thông báo:</b> {{announcement}}</div>{% endif %}
+{% with ms=get_flashed_messages(with_categories=true) %}{% for cat,m in ms %}<div class="wrap flash {{cat}}">{{m}}</div>{% endfor %}{% endwith %}
 
 {% block content %}{% endblock %}
 
-<footer>
-  <div class="wrap">{{footer_text}} · Chỉ đăng nội dung bạn có quyền phân phối.</div>
-</footer>
+<footer><div class="wrap">{{footer_text}} · Chỉ đăng nội dung bạn có quyền phân phối.</div></footer>
+
+{% if not me %}
+<div class="login-modal" data-login-modal aria-hidden="true">
+  <div class="login-modal-backdrop" data-login-close></div>
+  <section class="login-modal-card" role="dialog" aria-modal="true" aria-label="Đăng nhập">
+    <button class="login-modal-x" type="button" data-login-close aria-label="Đóng">×</button>
+    <h2>ĐĂNG NHẬP</h2>
+    <div class="login-rule"></div>
+    <a class="google-login-btn" href="{{url_for('google_login')}}"><b>G</b><span>Đăng nhập với Google</span></a>
+    <form class="qq-login-form" method="post" action="{{url_for('login',next=request.path)}}">
+      <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+      <label>Email / tài khoản<input name="username" autocomplete="username" required></label>
+      <label>Mật khẩu<input type="password" name="password" autocomplete="current-password" required></label>
+      <div class="login-links"><a href="{{url_for('register')}}">Đăng ký</a><span>|</span><a href="{{url_for('forgot_password')}}">Quên mật khẩu</a></div>
+      <div class="login-actions"><button class="btn login-submit" type="submit">Đăng nhập</button><button class="btn login-cancel" type="button" data-login-close>Hủy</button></div>
+    </form>
+  </section>
+</div>
+{% endif %}
+
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
 </body>
 </html>

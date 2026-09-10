@@ -1,4 +1,4 @@
-import os, json, uuid, re, zipfile, tempfile, shutil, io, unicodedata
+import os, json, uuid, re, zipfile, tempfile, shutil, io, unicodedata, secrets
 from pathlib import Path
 from datetime import datetime
 from functools import wraps
@@ -10,6 +10,12 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import secure_filename
+
+
+try:
+    from authlib.integrations.flask_client import OAuth
+except Exception:
+    OAuth = None
 
 try:
     import cloudinary
@@ -36,6 +42,17 @@ app.config.update(
 )
 db=SQLAlchemy(app)
 csrf=CSRFProtect(app)
+
+oauth = OAuth(app) if OAuth else None
+google = None
+if oauth and os.getenv('GOOGLE_CLIENT_ID') and os.getenv('GOOGLE_CLIENT_SECRET'):
+    google = oauth.register(
+        name='google',
+        client_id=os.getenv('GOOGLE_CLIENT_ID'),
+        client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        client_kwargs={'scope':'openid email profile'},
+    )
 
 def utcnow(): return datetime.utcnow()
 
@@ -400,7 +417,7 @@ def register():
     if setting('allow_register','1')!='1': abort(403)
     if request.method=='POST':
         username=request.form.get('username','').strip(); password=request.form.get('password',''); confirm=request.form.get('confirm','')
-        if not re.fullmatch(r'[A-Za-z0-9_]{3,30}',username): flash('Username chỉ gồm chữ, số, _ và dài 3-30 ký tự.','danger'); return redirect(request.url)
+        if not (re.fullmatch(r'[A-Za-z0-9_]{3,30}',username) or re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+',username)): flash('Hãy nhập username 3-30 ký tự hoặc email hợp lệ.','danger'); return redirect(request.url)
         if len(password)<6: flash('Mật khẩu cần ít nhất 6 ký tự.','danger'); return redirect(request.url)
         if password!=confirm: flash('Hai mật khẩu không khớp.','danger'); return redirect(request.url)
         if User.query.filter_by(username=username).first(): flash('Username đã tồn tại.','danger'); return redirect(request.url)
@@ -415,6 +432,42 @@ def login():
             session.clear(); session['uid']=u.id; return redirect(safe_next(request.args.get('next')) or url_for('home'))
         flash('Sai tài khoản/mật khẩu hoặc tài khoản bị khóa.','danger')
     return render_template('auth.html',mode='login')
+
+@app.route('/login/google')
+def google_login():
+    if not google:
+        flash('Đăng nhập Google chưa được cấu hình. Admin cần thêm GOOGLE_CLIENT_ID và GOOGLE_CLIENT_SECRET trên Render.','danger')
+        return redirect(url_for('login'))
+    redirect_uri=url_for('google_callback',_external=True)
+    return google.authorize_redirect(redirect_uri)
+
+@app.route('/login/google/callback')
+def google_callback():
+    if not google: abort(404)
+    try:
+        token=google.authorize_access_token()
+        info=token.get('userinfo') or {}
+        if not info:
+            info=google.get('https://openidconnect.googleapis.com/v1/userinfo').json()
+        email=(info.get('email') or '').strip().lower()
+        name=(info.get('name') or email.split('@')[0] or 'Google User').strip()
+        if not email: raise ValueError('Google không trả về email.')
+        u=User.query.filter_by(username=email).first()
+        if not u:
+            u=User(username=email,password_hash=generate_password_hash(secrets.token_urlsafe(32)),display_name=name)
+            db.session.add(u); db.session.commit()
+        if not u.is_active:
+            flash('Tài khoản đã bị khóa.','danger'); return redirect(url_for('login'))
+        session.clear(); session['uid']=u.id
+        return redirect(url_for('home'))
+    except Exception as e:
+        app.logger.exception('Google login failed')
+        flash('Đăng nhập Google thất bại. Vui lòng thử lại.','danger')
+        return redirect(url_for('login'))
+
+@app.route('/forgot-password')
+def forgot_password():
+    return render_template('forgot_password.html')
 
 @app.route('/logout')
 def logout(): session.clear(); return redirect(url_for('home'))

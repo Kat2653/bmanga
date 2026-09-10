@@ -100,3 +100,77 @@ a[href$="/admin/import-series"]{display:none!important}
   .chapters-qq b{font-size:15px}
   .chapters-qq span{font-size:13px}
 }
+
+
+/* ===== QQ MOBILE HEADER / SEARCH / LOGIN V3 ===== */
+.qq-mobile-actions{display:none;margin-left:auto;align-items:center;gap:10px}
+.round-action,.menu-head-btn,.login-head-btn{border:0;cursor:pointer;font-family:inherit}
+.round-action{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:#fff}
+.help-action{border:1.5px solid #d39a45;color:#d78d21;font-size:19px}
+.search-action{background:#f49322;color:#fff;font-size:29px;line-height:1}
+.search-action.active{box-shadow:0 0 0 3px #f4932230}
+.login-head-btn{min-height:46px;padding:0 13px;border-radius:5px;background:#4fa5d6;color:#fff;font-size:15px;display:grid;place-items:center}
+.menu-head-btn{width:48px;height:46px;border-radius:6px;background:#4ca4d4;color:#fff;font-size:26px;display:grid;place-items:center}
+.mobile-search-panel{display:none;background:#fff;border-top:1px solid #edf0f3;padding:10px 0 14px}
+.mobile-search-panel.open{display:block}
+.mobile-search-form{display:flex;border:1px solid #d8dce2;border-radius:30px;overflow:hidden;background:#fff}
+.mobile-search-form input{flex:1;min-width:0;border:0;outline:none;padding:14px 20px;font-size:16px}
+.mobile-search-form button{width:60px;border:0;background:#fff;color:#ef8e1d;font-size:28px;cursor:pointer}
+.login-desktop-trigger{border:0;cursor:pointer}
+.login-modal{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:18px}
+.login-modal.open{display:flex}
+.login-modal-backdrop{position:absolute;inset:0;background:#0008}
+.login-modal-card{position:relative;z-index:1;width:min(520px,100%);background:#fff;border-radius:4px;padding:26px 30px 28px;color:#222;box-shadow:0 22px 70px #0005}
+.login-modal-card h2,.qq-auth-page h1{text-align:center;font-weight:500;font-size:30px;margin:0 0 18px}
+.login-modal-x{position:absolute;right:12px;top:8px;border:0;background:transparent;font-size:28px;color:#777;cursor:pointer}
+.login-rule{height:1px;background:#e4e4e4;margin-bottom:18px}
+.google-login-btn{height:54px;background:#ea4d40;color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:18px;margin:0 0 14px}
+.google-login-btn b{font-size:22px;font-family:Arial}
+.qq-login-form{display:grid;gap:15px}
+.qq-login-form label{display:grid;gap:8px;font-size:17px}
+.qq-login-form input{width:100%;height:54px;border:1px solid #d0d3d8;border-radius:5px;padding:0 13px;font-size:17px;outline:none;background:#fff}
+.qq-login-form input:focus{border-color:#53a8d6;box-shadow:0 0 0 2px #53a8d617}
+.login-links{display:flex;gap:6px;align-items:center;font-size:16px}
+.login-links a:first-child{color:#39a0d5;font-weight:600}
+.login-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:2px}
+.login-submit{background:#ef8c20!important;color:#fff!important;border-color:#ef8c20!important;font-size:16px}
+.login-cancel{background:#51a4d4!important;color:#fff!important;border-color:#51a4d4!important;font-size:16px}
+body.modal-open{overflow:hidden}
+.qq-auth-page{width:min(560px,calc(100% - 24px));margin:34px auto;background:#fff;padding:28px 30px;border:1px solid #e3e5e8;border-radius:5px}
+.page-login-form{margin-top:10px}
+.forgot-box{font-size:16px;line-height:1.7}
+
+@media(max-width:700px){
+  .qq-head{position:relative}
+  .qq-head-row{min-height:82px!important;display:flex!important;flex-wrap:nowrap!important;padding:10px 0!important;gap:8px!important}
+  .qq-brand{margin-right:auto}
+  .qq-brand b{display:none}
+  .qq-brand .brand-icon{width:50px;height:50px;border-radius:12px;font-size:24px}
+  .desktop-search,.desktop-account{display:none!important}
+  .qq-mobile-actions{display:flex}
+  .mobile-search-panel{display:none}
+  .mobile-search-panel.open{display:block}
+  .menu-overlay.show{display:block;position:fixed;inset:0;background:#0007;z-index:38}
+  .qq-menu-bar{display:none!important}
+  .qq-menu-bar.open{display:block!important;position:absolute;left:0;right:0;top:100%;z-index:40;background:#f58a1f;border:0}
+  .qq-menu{display:block!important;width:100%;padding:8px 0 16px}
+  .qq-menu a{display:block;color:#fff!important;padding:18px 30px!important;font-size:17px!important;border:0!important}
+  .qq-menu a:hover{background:#ffffff12}
+  .menu-caret{font-size:12px}
+  .login-modal{align-items:flex-start;padding:0;overflow:auto}
+  .login-modal-card{width:100%;max-width:none;border-radius:0;margin-top:240px;padding:28px 30px 32px;min-height:490px}
+  .login-modal-card h2{font-size:28px}
+  .google-login-btn{height:54px;font-size:17px}
+  .qq-login-form input{height:72px;font-size:17px}
+  .login-actions{margin-top:4px}
+  .login-submit,.login-cancel{padding:12px 15px!important}
+  .qq-auth-page{margin:18px auto;padding:24px 20px}
+}
+@media(max-width:430px){
+  .qq-mobile-actions{gap:7px}
+  .round-action{width:44px;height:44px}
+  .help-action{display:none}
+  .login-head-btn{padding:0 10px;font-size:14px;min-height:44px}
+  .menu-head-btn{width:46px;height:44px}
+  .qq-brand .brand-icon{width:46px;height:46px}
+}
