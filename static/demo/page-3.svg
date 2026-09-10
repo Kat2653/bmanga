@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1300">
+    <rect width="100%" height="100%" fill="#f5f5f5"/>
+    <rect x="70" y="70" width="760" height="1160" rx="20" fill="#fff" stroke="#111" stroke-width="8"/>
+    <text x="450" y="560" text-anchor="middle" font-family="Arial" font-size="54" font-weight="700" fill="#111">TRANG 3 • Hãy upload ảnh chương của bạn</text>
+    <text x="450" y="690" text-anchor="middle" font-family="Arial" font-size="28" fill="#555">KBB Manga Demo</text>
+    </svg>

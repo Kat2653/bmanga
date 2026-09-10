@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Bmanga — Đọc manga online{% endblock %}
+{% block content %}<main class="container">
+<section class="hero"><div><div class="muted">BMANGA · ĐỌC TRUYỆN ONLINE</div><h1>Thế giới manga<br>trong một chạm.</h1><p>Khám phá truyện mới, tiếp tục chương đang đọc và theo dõi bộ truyện bạn yêu thích trên mọi thiết bị.</p><div class="cta"><a class="btn primary" href="{{ url_for('search') }}">Khám phá truyện</a>{% if not me %}<a class="btn" href="{{ url_for('register') }}">Tạo tài khoản</a>{% endif %}</div></div></section>
+{% macro cards(items) %}<div class="grid">{% for m in items %}<a class="card" href="{{ url_for('manga_detail',slug=m.slug) }}"><div class="cover">{% if m.cover %}<img src="{{m.cover}}" alt="{{m.title}}">{% else %}<div class="cover-placeholder">B</div>{% endif %}{% if m.latest %}<span class="badge">Ch. {{'%g'|format(m.latest)}}</span>{% endif %}</div><div class="card-body"><div class="card-title">{{m.title}}</div><div class="meta">{{m.genres or 'Manga'}} · 👁 {{m.views}}</div></div></a>{% endfor %}</div>{% endmacro %}
+<section class="section"><div class="section-head"><h2>🔥 Nổi bật</h2><a class="muted" href="{{url_for('search')}}">Xem tất cả →</a></div>{{cards(featured)}}</section>
+<section class="section"><div class="section-head"><h2>🆕 Mới cập nhật</h2></div>{{cards(latest)}}</section>
+<section class="section"><div class="section-head"><h2>📈 Xem nhiều</h2></div>{{cards(popular)}}</section>
+</main>{% endblock %}
